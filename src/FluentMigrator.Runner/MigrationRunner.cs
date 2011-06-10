@@ -182,6 +182,7 @@ namespace FluentMigrator.Runner
 
 			if (!VersionLoader.VersionInfo.HasAppliedMigration(version))
 			{
+                _announcer.Migrating(version);
 				Up(MigrationLoader.Migrations[version]);
 				VersionLoader.UpdateVersionInfo(version);
 			}
