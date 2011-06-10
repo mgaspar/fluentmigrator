@@ -37,7 +37,8 @@ namespace FluentMigrator.Tests.Unit
 			_announcer = new TextWriterAnnouncer(_stringWriter)
 							{
 								ShowElapsedTime = true,
-								ShowSql = true
+								ShowSql = true,
+                                 ShowMigratingVersions = true
 							};
 		}
 
@@ -76,5 +77,12 @@ namespace FluentMigrator.Tests.Unit
 			_announcer.Sql("DELETE Blah");
 			Output.ShouldBe("DELETE Blah" + Environment.NewLine);
 		}
+
+        [Test]
+        public void CanSayMigrating()
+        {
+            _announcer.Migrating(200909060935);
+            Output.ShouldBe("-- Migrating version 200909060935" + Environment.NewLine);
+        }
 	}
 }

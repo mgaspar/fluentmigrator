@@ -31,11 +31,13 @@ namespace FluentMigrator.Runner.Announcers
 			Write = write;
 			ShowSql = false;
 			ShowElapsedTime = false;
+		    ShowMigratingVersions = false;
 		}
 
 		public bool ShowSql { get; set; }
 		public bool ShowElapsedTime { get; set; }
-
+        public bool ShowMigratingVersions { get; set; }
+		
 		#region IAnnouncer Members
 
 		public virtual void Heading(string message)
@@ -89,6 +91,16 @@ namespace FluentMigrator.Runner.Announcers
 		{
 		}
 
-		#endregion
-	}
+		
+	    public virtual void Migrating(long version)
+	    {
+            if (!ShowMigratingVersions)
+                return;
+
+            Write(version.ToString());
+        }
+
+        #endregion
+
+    }
 }

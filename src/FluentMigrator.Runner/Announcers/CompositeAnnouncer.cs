@@ -59,6 +59,11 @@ namespace FluentMigrator.Runner.Announcers
             Error(string.Format(message ,args));
         }
 
+        public void Migrating(long version)
+        {
+            Each(a => a.Migrating(version));
+        }
+
 		#endregion
 
 		private void Each(Action<IAnnouncer> predicate)

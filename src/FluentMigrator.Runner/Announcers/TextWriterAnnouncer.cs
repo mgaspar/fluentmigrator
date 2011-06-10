@@ -85,5 +85,13 @@ namespace FluentMigrator.Runner.Announcers
 			Write(message);
 			Write(Environment.NewLine);
 		}
+
+	    public override void Migrating(long version)
+	    {
+            if (!ShowMigratingVersions)
+                return;
+
+            Say(string.Format("Migrating version {0}", version));
+	    }
 	}
 }

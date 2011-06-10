@@ -42,6 +42,10 @@ namespace FluentMigrator.Runner.Announcers
         {
         }
 
+        public void Migrating(long version)
+        {
+        }
+
 		#endregion
 	}
 }
