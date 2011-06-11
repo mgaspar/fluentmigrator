@@ -124,6 +124,13 @@ namespace FluentMigrator.Tests.Unit
 			metadata.Version.ShouldBe(123);
 		}
 
+        [Test]
+        public void MigrationMetadataCollectsDescriptionFromMigrationAttribute()
+        {
+            var metadata = DefaultMigrationConventions.GetMetadataForMigration(typeof(DefaultConventionMigrationFake));
+            metadata.Description.ShouldBe("Migration 123");
+        }
+
 		[Test]
 		public void WorkingDirectoryConventionDefaultsToAssemblyFolder()
 		{
@@ -134,7 +141,7 @@ namespace FluentMigrator.Tests.Unit
 		}
 	}
 
-	[Migration(123)]
+	[Migration(123, "Migration 123")]
 	internal class DefaultConventionMigrationFake : Migration
 	{
 		public override void Up() { }

@@ -90,7 +90,7 @@ namespace FluentMigrator.Infrastructure
 		public static MigrationMetadata GetMetadataForMigration(Type type)
 		{
 			var migrationAttribute = type.GetOneAttribute<MigrationAttribute>();
-			var metadata = new MigrationMetadata { Type = type, Version = migrationAttribute.Version };
+			var metadata = new MigrationMetadata { Type = type, Version = migrationAttribute.Version, Description = migrationAttribute.Description};
 
 			foreach (MigrationTraitAttribute traitAttribute in type.GetAllAttributes<MigrationTraitAttribute>())
 				metadata.AddTrait(traitAttribute.Name, traitAttribute.Value);

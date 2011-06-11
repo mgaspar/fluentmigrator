@@ -24,10 +24,16 @@ namespace FluentMigrator
 	public class MigrationAttribute : Attribute
 	{
 		public long Version { get; private set; }
+        public string Description { get; private set; }
 
 		public MigrationAttribute(long version)
 		{
 			Version = version;
 		}
+
+        public MigrationAttribute(long version, string description) : this(version)
+        {
+            Description = description;
+        }
 	}
 }
