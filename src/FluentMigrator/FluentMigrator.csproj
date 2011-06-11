@@ -206,6 +206,7 @@
     <Compile Include="Model\TableDefinition.cs" />
     <Compile Include="ProfileAttribute.cs" />
     <Compile Include="SystemMethods.cs" />
+    <Compile Include="VersionTableInfo\DefaultExtendedVersionTableMetaData.cs" />
     <Compile Include="VersionTableInfo\DefaultVersionTableMetaData.cs" />
     <Compile Include="VersionTableInfo\IVersionTableMetaData.cs" />
     <Compile Include="MigrationTraitAttribute.cs" />

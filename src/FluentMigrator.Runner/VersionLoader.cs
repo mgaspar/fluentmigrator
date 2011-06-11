@@ -22,7 +22,7 @@ namespace FluentMigrator.Runner
 			VersionTableMetaData = GetVersionTableMetaData();
 			VersionMigration = new VersionMigration(VersionTableMetaData);
 		    VersionSchemaMigration = new VersionSchemaMigration(VersionTableMetaData);
-
+		    ExtendedVersionMigration = new ExtendedVersionMigration(VersionTableMetaData);
 			LoadVersionInfo();
 		}
 
@@ -35,8 +35,9 @@ namespace FluentMigrator.Runner
 		private IMigrationConventions Conventions { get; set; }
 		private IMigrationProcessor Processor { get; set; }
 		private IMigration VersionMigration { get; set; }
-
-		public void UpdateVersionInfo( long version )
+        private IMigration ExtendedVersionMigration { get; set; }
+		
+        public void UpdateVersionInfo( long version )
 		{
 			var dataExpression = new InsertDataExpression();
 			dataExpression.Rows.Add( CreateVersionInfoInsertionData( version ) );
@@ -51,7 +52,10 @@ namespace FluentMigrator.Runner
 
 			if (matchedType == null)
 			{
-				return new DefaultVersionTableMetaData();
+                if (Processor.Options.StoreExtendedData)
+                    return new DefaultExtendedVersionTableMetaData();
+
+                return new DefaultVersionTableMetaData();
 			}
 
 			return (IVersionTableMetaData)Activator.CreateInstance(matchedType);
@@ -93,6 +97,16 @@ namespace FluentMigrator.Runner
 			}
 		}
 
+        public bool AlreadyCreatedExtendedVersionTable
+        {
+            get
+            {
+                return AlreadyCreatedVersionTable &&
+                    ((VersionTableMetaData is IExtendedVersionTableMetadata)
+                    && Processor.ColumnExists(VersionTableMetaData.SchemaName, VersionTableMetaData.TableName, ((IExtendedVersionTableMetadata)VersionTableMetaData).DescriptionColumnName));
+            }
+        }
+
 		public void LoadVersionInfo()
 		{
 			if ( Processor.Options.PreviewOnly )
@@ -100,10 +114,14 @@ namespace FluentMigrator.Runner
 				if ( !AlreadyCreatedVersionTable )
 				{
 					Runner.Up( VersionMigration );
-					VersionInfo = new VersionInfo();
 				}
-				else
-					VersionInfo = new VersionInfo();
+                
+                if (Processor.Options.StoreExtendedData && !AlreadyCreatedExtendedVersionTable)
+                {
+                    Runner.Up(ExtendedVersionMigration);
+                }
+
+                VersionInfo = new VersionInfo();
 
 				return;
 			}
@@ -117,6 +135,11 @@ namespace FluentMigrator.Runner
 				_versionInfo = new VersionInfo();
 				return;
 			}
+
+            if (Processor.Options.StoreExtendedData && !AlreadyCreatedExtendedVersionTable)
+            {
+                Runner.Up(ExtendedVersionMigration);
+            }
 
 			var dataSet = Processor.ReadTableData(VersionTableMetaData.SchemaName, VersionTableMetaData.TableName );
 			_versionInfo = new VersionInfo();

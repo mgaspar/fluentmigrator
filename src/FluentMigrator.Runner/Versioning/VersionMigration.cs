@@ -65,6 +65,38 @@ namespace FluentMigrator.Runner.Versioning
         }
     }
 
+    public class ExtendedVersionMigration : Migration
+	{
+		private IVersionTableMetaData _versionTableMetaData;
+
+        public ExtendedVersionMigration(IVersionTableMetaData versionTableMetaData)
+		{
+			_versionTableMetaData = versionTableMetaData;
+		}
+
+		public override void Up()
+		{
+		    var descriptionColumnName =
+		        (_versionTableMetaData is IExtendedVersionTableMetadata)
+		            ? ((IExtendedVersionTableMetadata) _versionTableMetaData).DescriptionColumnName
+		            : new DefaultExtendedVersionTableMetaData().DescriptionColumnName;
+
+		    Create
+                .Column(descriptionColumnName)
+                .OnTable(_versionTableMetaData.TableName)
+                .InSchema(_versionTableMetaData.SchemaName)
+                .AsString(200)
+                .NotNullable()
+                .WithDefaultValue(string.Empty);
+		}
+
+		public override void Down()
+		{
+			Delete.Table(_versionTableMetaData.TableName).InSchema(_versionTableMetaData.SchemaName);
+		}
+	}
+
+    
 	internal static class DateTimeExtensions
 	{
 		public static string ToISO8601(this DateTime dateTime)
