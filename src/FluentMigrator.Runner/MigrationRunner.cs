@@ -183,8 +183,9 @@ namespace FluentMigrator.Runner
 			if (!VersionLoader.VersionInfo.HasAppliedMigration(version))
 			{
                 _announcer.Migrating(version);
-				Up(MigrationLoader.Migrations[version]);
-				VersionLoader.UpdateVersionInfo(version);
+			    var migration = MigrationLoader.Migrations[version];
+                Up(migration);
+                VersionLoader.UpdateVersionInfo(version, migration.GetType());
 			}
 		}
 

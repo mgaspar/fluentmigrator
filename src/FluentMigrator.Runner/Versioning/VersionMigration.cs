@@ -76,10 +76,7 @@ namespace FluentMigrator.Runner.Versioning
 
 		public override void Up()
 		{
-		    var descriptionColumnName =
-		        (_versionTableMetaData is IExtendedVersionTableMetadata)
-		            ? ((IExtendedVersionTableMetadata) _versionTableMetaData).DescriptionColumnName
-		            : new DefaultExtendedVersionTableMetaData().DescriptionColumnName;
+		    var descriptionColumnName = GetDescriptionColumnName();
 
 		    Create
                 .Column(descriptionColumnName)
@@ -92,8 +89,15 @@ namespace FluentMigrator.Runner.Versioning
 
 		public override void Down()
 		{
-			Delete.Table(_versionTableMetaData.TableName).InSchema(_versionTableMetaData.SchemaName);
+            Delete.Column(GetDescriptionColumnName()).FromTable(_versionTableMetaData.TableName).InSchema(_versionTableMetaData.SchemaName);
 		}
+
+        private string GetDescriptionColumnName()
+        {
+            return (_versionTableMetaData is IExtendedVersionTableMetadata)
+                       ? ((IExtendedVersionTableMetadata) _versionTableMetaData).DescriptionColumnName
+                       : new DefaultExtendedVersionTableMetaData().DescriptionColumnName;
+        }
 	}
 
     

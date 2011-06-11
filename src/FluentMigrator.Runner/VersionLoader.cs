@@ -37,10 +37,10 @@ namespace FluentMigrator.Runner
 		private IMigration VersionMigration { get; set; }
         private IMigration ExtendedVersionMigration { get; set; }
 		
-        public void UpdateVersionInfo( long version )
+        public void UpdateVersionInfo(long version, Type type)
 		{
 			var dataExpression = new InsertDataExpression();
-			dataExpression.Rows.Add( CreateVersionInfoInsertionData( version ) );
+			dataExpression.Rows.Add( CreateVersionInfoInsertionData( version, type ) );
 			dataExpression.TableName = VersionTableMetaData.TableName;
 			dataExpression.SchemaName = VersionTableMetaData.SchemaName;
 			dataExpression.ExecuteWith( Processor );
@@ -61,9 +61,15 @@ namespace FluentMigrator.Runner
 			return (IVersionTableMetaData)Activator.CreateInstance(matchedType);
 		}
 
-		protected virtual InsertionDataDefinition CreateVersionInfoInsertionData( long version )
+		protected virtual InsertionDataDefinition CreateVersionInfoInsertionData( long version, Type type )
 		{
-			return new InsertionDataDefinition { new KeyValuePair<string, object>( VersionTableMetaData.ColumnName, version ) };
+			var insertData = new InsertionDataDefinition { new KeyValuePair<string, object>( VersionTableMetaData.ColumnName, version ) };
+            if ((Processor.Options.StoreExtendedData) && (VersionTableMetaData is IExtendedVersionTableMetadata))
+            {
+                var metadata = Conventions.GetMetadataForMigration(type);
+                insertData.Add(new KeyValuePair<string, object>(((IExtendedVersionTableMetadata)VersionTableMetaData).DescriptionColumnName, metadata.Description));
+            }
+		    return insertData;
 		}
 
 		public VersionInfo VersionInfo
@@ -102,8 +108,8 @@ namespace FluentMigrator.Runner
             get
             {
                 return AlreadyCreatedVersionTable &&
-                    ((VersionTableMetaData is IExtendedVersionTableMetadata)
-                    && Processor.ColumnExists(VersionTableMetaData.SchemaName, VersionTableMetaData.TableName, ((IExtendedVersionTableMetadata)VersionTableMetaData).DescriptionColumnName));
+                    (!(VersionTableMetaData is IExtendedVersionTableMetadata)
+                    || Processor.ColumnExists(VersionTableMetaData.SchemaName, VersionTableMetaData.TableName, ((IExtendedVersionTableMetadata)VersionTableMetaData).DescriptionColumnName));
             }
         }
 
@@ -129,19 +135,23 @@ namespace FluentMigrator.Runner
             if (!AlreadyCreatedVersionSchema)
                 Runner.Up(VersionSchemaMigration);
 
+		    bool isNewTable = false;
 			if ( !AlreadyCreatedVersionTable )
 			{
 				Runner.Up( VersionMigration );
-				_versionInfo = new VersionInfo();
-				return;
+			    isNewTable = true;
 			}
 
             if (Processor.Options.StoreExtendedData && !AlreadyCreatedExtendedVersionTable)
             {
                 Runner.Up(ExtendedVersionMigration);
             }
-
-			var dataSet = Processor.ReadTableData(VersionTableMetaData.SchemaName, VersionTableMetaData.TableName );
+            if (isNewTable)
+            {
+                _versionInfo = new VersionInfo();
+                return;
+            }
+		    var dataSet = Processor.ReadTableData(VersionTableMetaData.SchemaName, VersionTableMetaData.TableName );
 			_versionInfo = new VersionInfo();
 
 			foreach ( DataRow row in dataSet.Tables[ 0 ].Rows )
