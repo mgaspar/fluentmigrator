@@ -26,4 +26,10 @@ namespace FluentMigrator.VersionTableInfo
 		string TableName { get; }
 		string ColumnName { get; }
 	}
+
+    public interface IExtendedVersionTableMetadata : IVersionTableMetaData
+    {
+        string DescriptionColumnName { get; }
+
+    }
 }

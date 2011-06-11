@@ -145,7 +145,8 @@ namespace FluentMigrator.Runner.Initialization
 			var processor = processorFactory.Create( ConnectionString, RunnerContext.Announcer, new ProcessorOptions
 			{
 				PreviewOnly = RunnerContext.PreviewOnly,
-				Timeout = RunnerContext.Timeout
+				Timeout = RunnerContext.Timeout,
+                StoreExtendedData = RunnerContext.StoreExtendedData
 			} );
 
 			return processor;

@@ -34,5 +34,6 @@ namespace FluentMigrator.Runner.Initialization
 		IStopWatch StopWatch { get; }
 		int Timeout { get; set; }
 		//IMigrationProcessor Processor { get; }
+        bool StoreExtendedData { get; set; }
 	}
 }

@@ -27,6 +27,7 @@ namespace FluentMigrator.Runner.Initialization
 		public string Connection { get; set; }
 		public string Target { get; set; }
 		public bool PreviewOnly { get; set; }
+        public bool StoreExtendedData { get; set; }
 		public string Namespace { get; set; }
 		public string Task { get; set; }
 		public long Version { get; set; }
@@ -35,7 +36,7 @@ namespace FluentMigrator.Runner.Initialization
 		public string Profile { get; set; }
 		public int Timeout { get; set; }
 
-		public IAnnouncer Announcer
+	    public IAnnouncer Announcer
 		{
 			get; set;
 		}
@@ -111,7 +112,8 @@ namespace FluentMigrator.Runner.Initialization
 				_processor = processorFactory.Create(ConnectionString, Announcer, new ProcessorOptions
 																					{
 																						PreviewOnly = PreviewOnly,
-																						Timeout = Timeout
+																						Timeout = Timeout,
+                                                                                        StoreExtendedData = StoreExtendedData
 																					});
 
 				return _processor;

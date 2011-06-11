@@ -20,6 +20,11 @@ namespace FluentMigrator.Tests.Unit
         {
             get { return 30; }
         }
+
+        public bool StoreExtendedData
+        {
+            get { return false; }
+        }
     }
 
     [TestFixture]
