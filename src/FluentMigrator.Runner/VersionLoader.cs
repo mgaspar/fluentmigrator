@@ -115,24 +115,7 @@ namespace FluentMigrator.Runner
 
 		public void LoadVersionInfo()
 		{
-			if ( Processor.Options.PreviewOnly )
-			{
-				if ( !AlreadyCreatedVersionTable )
-				{
-					Runner.Up( VersionMigration );
-				}
-                
-                if (Processor.Options.StoreExtendedData && !AlreadyCreatedExtendedVersionTable)
-                {
-                    Runner.Up(ExtendedVersionMigration);
-                }
-
-                VersionInfo = new VersionInfo();
-
-				return;
-			}
-
-            if (!AlreadyCreatedVersionSchema)
+			if (!AlreadyCreatedVersionSchema)
                 Runner.Up(VersionSchemaMigration);
 
 		    bool isNewTable = false;
