@@ -16,6 +16,7 @@
 //
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,6 +25,7 @@ namespace FluentMigrator.Runner.Versioning
 	public class VersionInfo
 	{
 		private IList<long> _versionsApplied = new List<long>();
+        private IList<AppliedMigration> _migrationsApplied = new List<AppliedMigration>();
 
 		public long Latest()
 		{
@@ -35,6 +37,11 @@ namespace FluentMigrator.Runner.Versioning
 			_versionsApplied.Add(migration);
 		}
 
+        public void AddAppliedMigrationInfo(long migration, string description, DateTime dateApplied)
+        {
+            _migrationsApplied.Add(new AppliedMigration() { Version = migration, Description = description, DateApplied = dateApplied});
+        }
+
 		public bool HasAppliedMigration(long migration)
 		{
 			return _versionsApplied.Contains(migration);
@@ -44,5 +51,10 @@ namespace FluentMigrator.Runner.Versioning
 		{
 			return _versionsApplied.OrderByDescending(x => x).AsEnumerable();
 		}
+        
+        public IEnumerable<AppliedMigration> AppliedMigrationsInfo()
+        {
+            return _migrationsApplied.OrderByDescending(x => x.Version).AsEnumerable();
+        }
 	}
 }

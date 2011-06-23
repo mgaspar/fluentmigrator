@@ -140,7 +140,16 @@ namespace FluentMigrator.Runner
 
 			foreach ( DataRow row in dataSet.Tables[ 0 ].Rows )
 			{
-				_versionInfo.AddAppliedMigration( long.Parse( row[ 0 ].ToString() ) );
+			    var migrationVersion = long.Parse(row[0].ToString());
+				_versionInfo.AddAppliedMigration( migrationVersion );
+                if ((Processor.Options.StoreExtendedData) && (VersionTableMetaData is IExtendedVersionTableMetadata))
+                {
+                    var extendedTableMetadata = (IExtendedVersionTableMetadata) VersionTableMetaData;
+                    _versionInfo.AddAppliedMigrationInfo(
+                        migrationVersion, 
+                        row[extendedTableMetadata.DescriptionColumnName].ToString(),
+                        row[extendedTableMetadata.DateAppliedColumnName] is DateTime ? (DateTime) row[extendedTableMetadata.DateAppliedColumnName] : new DateTime());
+                }
 			}
 		}
 
