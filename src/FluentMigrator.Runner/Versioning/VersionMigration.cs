@@ -77,17 +77,30 @@ namespace FluentMigrator.Runner.Versioning
 		public override void Up()
 		{
 		    var descriptionColumnName = GetDescriptionColumnName();
+            var dateAppliedColumnName = GetDateAppliedColumnName();
 
-		    Create
+		    // Add Description column
+            Create
                 .Column(descriptionColumnName)
                 .OnTable(_versionTableMetaData.TableName)
                 .InSchema(_versionTableMetaData.SchemaName)
                 .AsString(200)
-                .NotNullable()
+                .Nullable()
                 .WithDefaultValue(string.Empty);
+
+            // Add DateApplied column
+            Create
+                .Column(dateAppliedColumnName)
+                .OnTable(_versionTableMetaData.TableName)
+                .InSchema(_versionTableMetaData.SchemaName)
+                .AsDateTime()
+                .Nullable()
+                ;
 		}
 
-		public override void Down()
+       
+
+        public override void Down()
 		{
             Delete.Column(GetDescriptionColumnName()).FromTable(_versionTableMetaData.TableName).InSchema(_versionTableMetaData.SchemaName);
 		}
@@ -97,6 +110,13 @@ namespace FluentMigrator.Runner.Versioning
             return (_versionTableMetaData is IExtendedVersionTableMetadata)
                        ? ((IExtendedVersionTableMetadata) _versionTableMetaData).DescriptionColumnName
                        : new DefaultExtendedVersionTableMetaData().DescriptionColumnName;
+        }
+
+        private string GetDateAppliedColumnName()
+        {
+            return (_versionTableMetaData is IExtendedVersionTableMetadata)
+                     ? ((IExtendedVersionTableMetadata)_versionTableMetaData).DateAppliedColumnName
+                     : new DefaultExtendedVersionTableMetaData().DateAppliedColumnName;
         }
 	}
 

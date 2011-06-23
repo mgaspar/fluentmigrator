@@ -68,6 +68,7 @@ namespace FluentMigrator.Runner
             {
                 var metadata = Conventions.GetMetadataForMigration(type);
                 insertData.Add(new KeyValuePair<string, object>(((IExtendedVersionTableMetadata)VersionTableMetaData).DescriptionColumnName, metadata.Description));
+                insertData.Add(new KeyValuePair<string, object>(((IExtendedVersionTableMetadata)VersionTableMetaData).DateAppliedColumnName, DateTime.UtcNow));
             }
 		    return insertData;
 		}
