@@ -37,10 +37,10 @@ namespace FluentMigrator.Runner
 		private IMigration VersionMigration { get; set; }
         private IMigration ExtendedVersionMigration { get; set; }
 		
-        public void UpdateVersionInfo(long version, Type type)
+        public void UpdateVersionInfo(long version, Type type, TimeSpan elapsedTime)
 		{
 			var dataExpression = new InsertDataExpression();
-			dataExpression.Rows.Add( CreateVersionInfoInsertionData( version, type ) );
+			dataExpression.Rows.Add( CreateVersionInfoInsertionData( version, type, elapsedTime ) );
 			dataExpression.TableName = VersionTableMetaData.TableName;
 			dataExpression.SchemaName = VersionTableMetaData.SchemaName;
 			dataExpression.ExecuteWith( Processor );
@@ -61,7 +61,7 @@ namespace FluentMigrator.Runner
 			return (IVersionTableMetaData)Activator.CreateInstance(matchedType);
 		}
 
-		protected virtual InsertionDataDefinition CreateVersionInfoInsertionData( long version, Type type )
+		protected virtual InsertionDataDefinition CreateVersionInfoInsertionData(long version, Type type, TimeSpan elapsedTime)
 		{
 			var insertData = new InsertionDataDefinition { new KeyValuePair<string, object>( VersionTableMetaData.ColumnName, version ) };
             if ((Processor.Options.StoreExtendedData) && (VersionTableMetaData is IExtendedVersionTableMetadata))
@@ -69,6 +69,7 @@ namespace FluentMigrator.Runner
                 var metadata = Conventions.GetMetadataForMigration(type);
                 insertData.Add(new KeyValuePair<string, object>(((IExtendedVersionTableMetadata)VersionTableMetaData).DescriptionColumnName, metadata.Description));
                 insertData.Add(new KeyValuePair<string, object>(((IExtendedVersionTableMetadata)VersionTableMetaData).DateAppliedColumnName, DateTime.UtcNow));
+                insertData.Add(new KeyValuePair<string, object>(((IExtendedVersionTableMetadata)VersionTableMetaData).ElapsedTimeColumnName, elapsedTime.TotalMilliseconds));
             }
 		    return insertData;
 		}
@@ -148,7 +149,8 @@ namespace FluentMigrator.Runner
                     _versionInfo.AddAppliedMigrationInfo(
                         migrationVersion, 
                         row[extendedTableMetadata.DescriptionColumnName].ToString(),
-                        row[extendedTableMetadata.DateAppliedColumnName] is DateTime ? (DateTime) row[extendedTableMetadata.DateAppliedColumnName] : new DateTime());
+                        row[extendedTableMetadata.DateAppliedColumnName] is DateTime ? (DateTime) row[extendedTableMetadata.DateAppliedColumnName] : new DateTime(), 
+                        row[extendedTableMetadata.ElapsedTimeColumnName] is double ? (double) row[extendedTableMetadata.ElapsedTimeColumnName] : 0d);
                 }
 			}
 		}

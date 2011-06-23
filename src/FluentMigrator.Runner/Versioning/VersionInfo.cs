@@ -37,9 +37,9 @@ namespace FluentMigrator.Runner.Versioning
 			_versionsApplied.Add(migration);
 		}
 
-        public void AddAppliedMigrationInfo(long migration, string description, DateTime dateApplied)
+        public void AddAppliedMigrationInfo(long migration, string description, DateTime dateApplied, double elapsedTime)
         {
-            _migrationsApplied.Add(new AppliedMigration() { Version = migration, Description = description, DateApplied = dateApplied});
+            _migrationsApplied.Add(new AppliedMigration() { Version = migration, Description = description, DateApplied = dateApplied, ElapsedTime = elapsedTime});
         }
 
 		public bool HasAppliedMigration(long migration)

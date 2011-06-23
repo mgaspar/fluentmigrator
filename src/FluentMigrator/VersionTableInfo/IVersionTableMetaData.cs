@@ -31,5 +31,6 @@ namespace FluentMigrator.VersionTableInfo
     {
         string DescriptionColumnName { get; }
         string DateAppliedColumnName { get; }
+        string ElapsedTimeColumnName { get; }
     }
 }

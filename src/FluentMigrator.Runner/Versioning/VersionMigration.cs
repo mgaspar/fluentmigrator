@@ -78,7 +78,7 @@ namespace FluentMigrator.Runner.Versioning
 		{
 		    var descriptionColumnName = GetDescriptionColumnName();
             var dateAppliedColumnName = GetDateAppliedColumnName();
-
+            var elapsedTimeColumnName = GetElapsedTimeColumnName();
 		    // Add Description column
             Create
                 .Column(descriptionColumnName)
@@ -96,9 +96,16 @@ namespace FluentMigrator.Runner.Versioning
                 .AsDateTime()
                 .Nullable()
                 ;
-		}
-
-       
+        
+            // Add ElapsedTime column
+            Create
+                .Column(elapsedTimeColumnName)
+                .OnTable(_versionTableMetaData.TableName)
+                .InSchema(_versionTableMetaData.SchemaName)
+                .AsDouble()
+                .Nullable()
+                ;
+        }
 
         public override void Down()
 		{
@@ -118,6 +125,14 @@ namespace FluentMigrator.Runner.Versioning
                      ? ((IExtendedVersionTableMetadata)_versionTableMetaData).DateAppliedColumnName
                      : new DefaultExtendedVersionTableMetaData().DateAppliedColumnName;
         }
+        private string GetElapsedTimeColumnName()
+        {
+            return (_versionTableMetaData is IExtendedVersionTableMetadata)
+                     ? ((IExtendedVersionTableMetadata)_versionTableMetaData).ElapsedTimeColumnName
+                     : new DefaultExtendedVersionTableMetaData().ElapsedTimeColumnName;
+        }
+
+
 	}
 
     

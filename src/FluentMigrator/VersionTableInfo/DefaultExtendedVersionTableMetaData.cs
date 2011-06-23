@@ -13,5 +13,10 @@ namespace FluentMigrator.VersionTableInfo
         {
             get { return "DateApplied"; }
         }
+
+        public string ElapsedTimeColumnName
+        {
+            get { return "ElapsedTime"; }
+        }
     }
 }

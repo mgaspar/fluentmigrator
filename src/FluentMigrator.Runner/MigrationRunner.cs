@@ -184,8 +184,8 @@ namespace FluentMigrator.Runner
 			{
                 _announcer.Migrating(version);
 			    var migration = MigrationLoader.Migrations[version];
-                Up(migration);
-                VersionLoader.UpdateVersionInfo(version, migration.GetType());
+                var elapsedTime = Up(migration);
+                VersionLoader.UpdateVersionInfo(version, migration.GetType(), elapsedTime);
 			}
 		}
 
@@ -269,7 +269,7 @@ namespace FluentMigrator.Runner
 			get { return _migrationAssembly; }
 		}
 
-		public void Up(IMigration migration)
+		public TimeSpan Up(IMigration migration)
 		{
 			var name = migration.GetType().Name;
 			_announcer.Heading(name + ": migrating");
@@ -285,9 +285,11 @@ namespace FluentMigrator.Runner
 
 			_announcer.Say(name + ": migrated");
 			_announcer.ElapsedTime(_stopWatch.ElapsedTime());
+
+		    return _stopWatch.ElapsedTime();
 		}
 
-		public void Down(IMigration migration)
+		public TimeSpan Down(IMigration migration)
 		{
 			var name = migration.GetType().Name;
 			_announcer.Heading(name + ": reverting");
@@ -303,6 +305,8 @@ namespace FluentMigrator.Runner
 
 			_announcer.Say(name + ": reverted");
 			_announcer.ElapsedTime(_stopWatch.ElapsedTime());
+
+            return _stopWatch.ElapsedTime();
 		}
 
 		/// <summary>
