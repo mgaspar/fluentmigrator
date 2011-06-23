@@ -29,5 +29,6 @@ namespace FluentMigrator.Infrastructure
 		ICollection<IMigrationExpression> Expressions { get; set; }
 		IQuerySchema QuerySchema { get; }
         Assembly MigrationAssembly { get; set; }
+	    bool PreviewOnly { get; }
 	}
 }

@@ -31,7 +31,7 @@ namespace FluentMigrator
 {
 	public abstract class Migration : IMigration
 	{
-		private IMigrationContext _context;
+		protected IMigrationContext _context;
 		private readonly object _mutex = new object();
 
 		public abstract void Up();
